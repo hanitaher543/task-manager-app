@@ -52,14 +52,40 @@ async function getTaskById(req, res){
 
     res.status(200).send({message : `The tasks by Id ${taskId}  that exist in the database are`, task});
 
-
     } catch (error){
         console.error('Error occurred while fetching task:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
 
+async function deleteTask (req, res){
+
+    const taskId = req.params.taskId;
+
+    try{
+
+        // Find task by Id in the database
+        const task = await Task.findByPk(taskId);
+        
+        // Check task exist in db 
+        if(!task){
+            return res.status(404).send({error : 'Task not found'});
+        }
+
+        await task.destroy();
+
+        // Return success message
+        res.status(200).send({message :'Task deleted successfully' });
 
 
-module.exports = {createTask, getAllTasks, getTaskById};
+    }catch (error){
+        console.error('Error occurred while deleting task:', error);
+        res.status(500).json({ error: 'Internal server error' });
+
+    }
+};
+
+
+
+module.exports = {createTask, getAllTasks, getTaskById, deleteTask};
 
